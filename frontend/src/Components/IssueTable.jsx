@@ -6,7 +6,7 @@ function IssueTable() {
  const [form,setForm] = useState({
 title:'',
 description:'',
-due:'',
+dueDate:'',
 owner:'',
 priority:''
  })
@@ -22,7 +22,7 @@ const handleSubmit = async(e)=>{
         alert('Issue created');
         setForm ({title:'',
         description:'',
-        due:'',
+        dueDate:'',
         owner:'',
         priority:''
         });
@@ -43,8 +43,8 @@ const handleSubmit = async(e)=>{
         <label htmlFor="description" >Description: </label>
         <textarea id="description" name="description" value={form.description} onChange={handleChange} ></textarea> <br/><br/>
 
-         <label htmlFor="due">Due: </label>
-        <input type="text" id="due"  name="due" value={form.due} onChange={handleChange}/>
+         <label htmlFor="dueDate">Due: </label>
+        <input type="text" id="dueDate"  name="dueDate" value={form.dueDate} onChange={handleChange}/>
         <br/> <br/>
 
        <label htmlFor="owner">Owner: </label>
@@ -59,8 +59,6 @@ const handleSubmit = async(e)=>{
         </select>
  
         <br/><br/>
-
-       
 
         <input type="submit" value="Submit" />
       </form>

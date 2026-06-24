@@ -36,14 +36,15 @@ function IssueList() {
     return(
         <div className= "issue-list">
             <h2>Issues</h2>
-            {issues.length === 0 && <p>No Tickets found</p>}
+            {issues.length === 0 && <p>No Issues found</p>}
             {issues.map((issue)=>(
             <div key ={issue._id} className="issue-card">
              <h3>{issue.title}</h3>
              <p><strong>Description: </strong> {issue.description}</p>
-             <p>Due at:{new Date(issue.due).toLocaleString()}</p>
+            <p><strong>Due Date: </strong> {issue.dueDate}</p>
             <p><strong>Owner: </strong> {issue.owner}</p>
             <p><strong>Priority: </strong> {issue.priority}</p>
+            <p><strong>Created At: </strong> {new Date(issue.createdAt).toLocaleString()}</p>
              <div className="issue-button">
              <button onClick = {()=> deleteIssue(issue._id)}>Delete</button>
              </div>   
