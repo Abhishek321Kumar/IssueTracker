@@ -1,61 +1,75 @@
-
-import React, {useState,useEffect} from "react";
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import IssueTable from './IssueTable';
+import IssueAdd from './IssueAdd';
+import IssueFilter from './IssueFilter';
 
 function IssueList() {
-  const[issues,setIssues] = useState([]);
+  const [issues, setIssues] = useState([]);
 
-    const fetchIssues = async() =>{
-        try{
-            const res = await axios.get('http://localhost:5000/api/issues');
-            setIssues(res.data);
-
-        }catch(error){
-            alert("Error fetching the issue");
-            console.log(error);
+  async function loadData() {
+    const query = `
+      query {
+        issueList {
+          id
+          status
+          owner
+          effort
+          created
+          due
+          title
         }
-    };
+      }
+    `;
 
-    const deleteIssue = async(id)=>{
-        try{
-            await axios.delete(`http://localhost:5000/api/issues/${id}`);
-            setIssues(prevIssues => prevIssues.filter(issue => issue._id !== id));
-        }catch(error){
-            alert("Error in deleting Ticket");
-            console.log(error);
+    try {
+      const response = await fetch('http://localhost:3001/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query }),
+      });
+
+      const result = await response.json();
+
+      setIssues(result.data.issueList);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function createIssue(issue) {
+    const query = `
+      mutation ($issue: IssueInputs!) {
+        issueAdd(issue: $issue) {
+          id
         }
-    };
+      }
+    `;
 
+    const variables = { issue };
 
+    await fetch('http://localhost:3001/graphql', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables }),
+    });
 
-    useEffect(()=>{
-        fetchIssues();
-        // window.dispatchEvent(new Event("ticketCreated"))
-    },[]);
+    loadData();
+  }
 
-    return(
-        <div className= "issue-list">
-            <h2>Issues</h2>
-            {issues.length === 0 && <p>No Issues found</p>}
-            {issues.map((issue)=>(
-            <div key ={issue._id} className="issue-card">
-             <h3>{issue.title}</h3>
-             <p><strong>Description: </strong> {issue.description}</p>
-            <p><strong>Due Date: </strong> {issue.dueDate}</p>
-            <p><strong>Owner: </strong> {issue.owner}</p>
-            <p><strong>Priority: </strong> {issue.priority}</p>
-            <p><strong>Created At: </strong> {new Date(issue.createdAt).toLocaleString()}</p>
-             <div className="issue-button">
-             <button onClick = {()=> deleteIssue(issue._id)}>Delete</button>
-             </div>   
-             </div>
-            ))}
-        </div>
-    )
+  return (
+    <>
+      <h1>Issue Tracker</h1>
+      <IssueFilter/>
+      <IssueTable issues={issues} />
+      <IssueAdd createIssue={createIssue} />
+    </>
+  );
 }
 
-
-
 export default IssueList;
-
-

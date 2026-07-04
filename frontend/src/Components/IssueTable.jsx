@@ -1,71 +1,45 @@
-
-import React, {useState} from "react";
-import axios from 'axios'
-
-function IssueTable() {
- const [form,setForm] = useState({
-title:'',
-description:'',
-dueDate:'',
-owner:'',
-priority:''
- })
-const handleChange=(e)=>{
-    setForm({ ...form, [e.target.name]: e.target.value })
-}
+import React from 'react';
 
 
-const handleSubmit = async(e)=>{
-    e.preventDefault();
-    try{
-        await axios.post('http://localhost:5000/api/issues', form);
-        alert('Issue created');
-        setForm ({title:'',
-        description:'',
-        dueDate:'',
-        owner:'',
-        priority:''
-        });
 
-
-    } catch(error){
-        alert("Error Creating Issue ");
-        console.log(console.error());
-    };
-}
-
+function IssueRow({ issue }) {
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="title">Title: </label>
-        <input type="text" id="title" name="title" value={form.title} onChange={handleChange}/> <br/><br/>
-
-        <label htmlFor="description" >Description: </label>
-        <textarea id="description" name="description" value={form.description} onChange={handleChange} ></textarea> <br/><br/>
-
-         <label htmlFor="dueDate">Due: </label>
-        <input type="text" id="dueDate"  name="dueDate" value={form.dueDate} onChange={handleChange}/>
-        <br/> <br/>
-
-       <label htmlFor="owner">Owner: </label>
-        <input type="text" id="owner"  name="owner" value={form.owner} onChange={handleChange}/>
-        <br/> <br/>
-
-        <label htmlFor="priority">Priority: </label>
-        <select id="priority" name="priority" value={form.priority} onChange={handleChange} >
-          <option value="Low">Low</option>
-          <option value="Medium">Medium</option>
-          <option value="High">High</option>
-        </select>
- 
-        <br/><br/>
-
-        <input type="submit" value="Submit" />
-      </form>
-    </div>
+    <tr>
+      <td>{issue.id}</td>
+      <td>{issue.title}</td>
+      <td>{issue.owner}</td>
+      <td>{issue.status}</td>
+      <td>{issue.effort}</td>
+      <td>{new Date(issue.created).toDateString()}</td>
+      <td>
+        {issue.due ? new Date(issue.due).toDateString() : ''}
+      </td>
+    </tr>
   );
 }
 
+function IssueTable({ issues }) {
+  return (
+    <table border="1">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Owner</th>
+          <th>Status</th>
+          <th>Effort</th>
+          <th>Created</th>
+          <th>Due</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {issues.map(issue => (
+          <IssueRow key={issue.id} issue={issue} />
+        ))}
+      </tbody>
+    </table>
+  );
+}
 
 export default IssueTable;
-
